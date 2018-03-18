@@ -1,8 +1,8 @@
 var http = require('http');
 var events = require('events');
 
-var amfiHost = "portal.amfiindia.com"; //changed on 19 Oct 2013
-var amfiPath = "/spages/NAV0.txt";
+var amfiHost = "http://portal.amfiindia.com"; //changed on 19 Oct 2013
+var amfiPath = "/spages/NAVAll.txt";
 
 var lineBuffer = "";
 
@@ -28,7 +28,7 @@ var AMFINavs = function (options) {
     if (refreshInterval) {
     	var int = setInterval(function () {
     		acquireData.call(self);
-    	}, refreshInterval);    
+    	}, refreshInterval);
     }
 }
 
@@ -75,9 +75,9 @@ function acquireData () {
 				self.status = 'Data Ready';
 				console.log(self.status);
 				//data for callback
-				self.data = {funds: self.funds, 
-						fundTypes: self.fundTypes, 
-						fundManagers: self.fundManagers, 
+				self.data = {funds: self.funds,
+						fundTypes: self.fundTypes,
+						fundManagers: self.fundManagers,
 						updateDate : self.updateDate}
 				//emit event
 				self.emit('dataready', self.data);
@@ -95,7 +95,7 @@ function processData(stringChunk) {
 		if (lines) {
 			if (lines[lines.length-1])
 				lineBuffer = lines[lines.length-1];  //assign last line to buffer
-			else 
+			else
 				lineBuffer = "";
 			lines.forEach(processLine);
 		}
@@ -112,7 +112,7 @@ function processLine(line, idx, lines) {
 		headers = [];
 		processHeader(line);
 	}
-	else if (line.indexOf(';') > 0)  //if the line has a semi-colon, then this line has func info 
+	else if (line.indexOf(';') > 0)  //if the line has a semi-colon, then this line has func info
 		processFund(line);
 	else if (line.indexOf('Ended') > 0)  //if the line has a fund type, then it will have 'Ended' text
 		processFundType(line);
@@ -130,7 +130,7 @@ function processFundType(line) {
 	currTyp = line;  //next few funds will be of this fund type, so set it as current value
 	if (!typesHash[currTyp]) {   //making sure types are not duplicated
 		types.push(currTyp);
-		typesHash[currTyp] = currTyp;		
+		typesHash[currTyp] = currTyp;
 	}
 }
 
@@ -140,15 +140,20 @@ function processMgr(line) {
 	if (!managerHash[currMgr]) {   //making sure fund managers are not duplicated
 		managers.push(currMgr);
 		managerHash[currMgr] = currMgr;
-	}	
+	}
 }
 
 //process line with fund information
 function processFund(line) {
 	fundVals = line.split(';');
 	var fund = {};
-	for (i=0; i < fundVals.length; i++)
-		fund[headers[i]] = fundVals[i];
+	// for (i=0; i < fundVals.length; i++)
+	// 	fund[headers[i]] = fundVals[i];
+
+  fund.Code = fundVals[0]; // Scheme code
+  fund.Name = fundVals[3]; // Scheme name
+  fund.Nav = fundVals[4]; // NAV
+  fund.Date = fundVals[7]; // NAV Date
 	fund.Type = currTyp;  //add type to fund information
 	fund.Manager = currMgr;  //add manager to fund information
 	funds.push(fund);
