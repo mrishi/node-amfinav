@@ -147,13 +147,12 @@ function processMgr(line) {
 function processFund(line) {
 	fundVals = line.split(';');
 	var fund = {};
-	// for (i=0; i < fundVals.length; i++)
-	// 	fund[headers[i]] = fundVals[i];
-
-  fund.Code = fundVals[0]; // Scheme code
-  fund.Name = fundVals[3]; // Scheme name
-  fund.Nav = fundVals[4]; // NAV
-  fund.Date = fundVals[7]; // NAV Date
+// 	for (i=0; i < fundVals.length; i++)
+// 		fund[headers[i]] = fundVals[i];
+	fund.Code = fundVals[0]; // Scheme code
+	fund.Name = fundVals[3]; // Scheme name
+	fund.Nav = fundVals[4]; // NAV
+	fund.Date = fundVals[7]; // NAV Date
 	fund.Type = currTyp;  //add type to fund information
 	fund.Manager = currMgr;  //add manager to fund information
 	funds.push(fund);
