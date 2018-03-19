@@ -8,11 +8,11 @@ var lineBuffer = "";
 
 var headers = [];
 var types = [];
-var managers = [];
+var houses = [];
 var funds = [];
-var managerHash = {};
+var houseHash = {};
 var typesHash = {};
-var currTyp, currMgr;
+var currTyp, currHouse;
 var callback, refreshInterval;
 
 var AMFINavs = function (options) {
@@ -44,7 +44,7 @@ AMFINavs.prototype = Object.create(events.EventEmitter.prototype, {
 function acquireData () {
 	funds = [];
 	types = [];
-	managers = [];
+	houses = [];
 	var self = this;
 	self.status = 'Acquiring Data';
 	console.log(self.status);
@@ -65,11 +65,11 @@ function acquireData () {
 
 		  response.on('end', function () {
 			  	//sort the lists
-				managers.sort();
+				houses.sort();
 				types.sort();
 				//set the data
 				self.funds = funds;
-				self.fundManagers = managers;
+				self.fundHouses = houses;
 				self.fundTypes = types;
 				self.updateDate = new Date();
 				self.status = 'Data Ready';
@@ -77,7 +77,7 @@ function acquireData () {
 				//data for callback
 				self.data = {funds: self.funds,
 						fundTypes: self.fundTypes,
-						fundManagers: self.fundManagers,
+						fundHouses: self.fundHouses,
 						updateDate : self.updateDate}
 				//emit event
 				self.emit('dataready', self.data);
@@ -136,10 +136,10 @@ function processFundType(line) {
 
 //process line with fund manager name
 function processMgr(line) {
-	currMgr = line;   //next few funds will be of this fund manager, so set it as current value
-	if (!managerHash[currMgr]) {   //making sure fund managers are not duplicated
-		managers.push(currMgr);
-		managerHash[currMgr] = currMgr;
+	currHouse = line;   //next few funds will be of this fund manager, so set it as current value
+	if (!houseHash[currHouse]) {   //making sure fund houses are not duplicated
+		houses.push(currHouse);
+		houseHash[currHouse] = currHouse;
 	}
 }
 
@@ -149,12 +149,12 @@ function processFund(line) {
 	var fund = {};
 // 	for (i=0; i < fundVals.length; i++)
 // 		fund[headers[i]] = fundVals[i];
-	fund.Code = fundVals[0]; // Scheme code
-	fund.Name = fundVals[3]; // Scheme name
-	fund.Nav = fundVals[4]; // NAV
-	fund.Date = fundVals[7]; // NAV Date
-	fund.Type = currTyp;  //add type to fund information
-	fund.Manager = currMgr;  //add manager to fund information
+	fund.code = fundVals[0]; // Scheme code
+	fund.name = fundVals[3]; // Scheme name
+	fund.nav = fundVals[4]; // NAV
+	fund.date = fundVals[7]; // NAV Date
+	fund.type = currTyp;  //add type to fund information
+	fund.house = currHouse;  //add manager to fund information
 	funds.push(fund);
 }
 
